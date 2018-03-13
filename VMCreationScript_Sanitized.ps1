@@ -151,8 +151,10 @@ $vmuser = $_.samaccountname
     }
 }
 
+IF (!$vmuser){
 #Email message detailing created VMs.
 $message.Body =(Get-VIEvent -maxsamples 10000 |where {$_.Gettype().Name-eq "VmCreatedEvent" -or $_.Gettype().Name-eq "VmBeingClonedEvent" -or $_.Gettype().Name-eq "VmBeingDeployedEvent"} | where {$_.CreatedTime -ge ((Get-Date).AddDays(-0)).Date} | Sort CreatedTime -Descending | select-object createdtime,fullformattedmessage | ConvertTo-HTML -head $style -PreContent "<hr><h4 align=`"center`" bgcolor=`"#0099ff`">VMs Created - Last Day</h4><hr>")
 $smtp = New-Object Net.Mail.SmtpClient($smtpServer)
 $smtp.Send($message)
+}
 exit
